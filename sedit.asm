@@ -140,9 +140,9 @@ gotline:    ldi   0                     ; double zero to end the string
           ; will be accepted so the table needs to be sorted accorbingly.
 
             ldi   command.1
-            phi   ra
+            phi   rc
             ldi   command.0
-            plo   ra
+            plo   rc
 
             ldi   buffer.1
             phi   rf
@@ -157,7 +157,7 @@ gotline:    ldi   0                     ; double zero to end the string
 chknext:    ldi   buffer
             plo   rf
 
-nxtword:    lda   ra
+nxtword:    lda   rc
             lbz   unknown
 
             sm
@@ -170,7 +170,7 @@ nxtword:    lda   ra
 
 strcomp:    inc   rf
 
-            lda   ra
+            lda   rc
             lbz   endword
 
             sm
@@ -182,13 +182,13 @@ strcomp:    inc   rf
           ; word match. If at the end of the command list entry, we have a
           ; match, otherwise resume matching with next word.
 
-skpword:    lda   ra
+skpword:    lda   rc
             lbnz  skpword
 
 endword:    lda   rf
             lbnz  chklast
 
-            lda   ra
+            lda   rc
             lbz   matched
 
             sm
@@ -198,14 +198,14 @@ endword:    lda   rf
           ; If a mismatched word, then skip to the next command list entry
           ; and test again from there.
 
-skipcmd:    lda   ra
+skipcmd:    lda   rc
             lbnz  skipcmd
 
-chklast:    lda   ra
+chklast:    lda   rc
             lbnz  skipcmd
 
-            inc   ra
-            inc   ra
+            inc   rc
+            inc   rc
 
             lbr   chknext
 
@@ -215,16 +215,16 @@ chklast:    lda   ra
 
 matched:    sex   r2                    ; set x back to the stack pointer
 
-            ldi   indjump.1             ; temporarily change program counter
+indjump:    ldi   jump_r3.1             ; temporarily change program counter
             phi   rd
-            ldi   indjump.0
+            ldi   jump_r3.0
             plo   rd
 
             sep   rd                    ; swap program counter to rd
 
-indjump:    lda   ra                    ; load routine address into r3
+jump_r3:    lda   rc                    ; load routine address into r3
             phi   r3
-            lda   ra
+            lda   rc
             plo   r3
 
             sep   r3                    ; set program counter back to r3
@@ -272,6 +272,9 @@ command:    db    'set',0,'drive',0,0
 
             db    'read',0,0
             dw    readsec
+
+            db    'au',0,0
+            dw    read_au
 
             db    'write',0,'lba',0,0
             dw    writlba
@@ -934,68 +937,84 @@ editadr:    ghi   re                    ; save current echo flag and clear
             sep   scall                 ; output backspaces to position
             dw    o_msg
 
-            lbr   readkey               ; get editor mode input key
 
+          ; Editor move
 
-
-
-          ; Get a keypress of input from the console and process accordingly.
-
-readkey:    sep   scall                 ; get a key press
+readkey:    sep   scall
             dw    o_readkey
 
-            smi   'x'                   ; if x, then finished editing
-            lbz   endedit
-            lbdf  readkey
+            str   r2
 
-            smi   'g'-'x'               ; if it's a-f process as hex alpha
-            lbdf  readkey
-            smi   'a'-'g'
-            lbdf  alphkey
+            ldi   keytab.1
+            phi   rc
+            ldi   keytab.0
+            plo   rc
 
-            smi   'X'-'a'               ; if x, then finished editing
-            lbz   endedit
-            lbdf  readkey
+            lbr   lookkey
 
-            smi   'G'-'X'               ; if it's A-F process as hex alpha
-            lbdf  readkey
-            smi   'A'-'G'
-            lbdf  alphkey
 
-            smi   ':'-'A'               ; if it's 0-9 process as hex digit
-            lbdf  readkey
-            smi   '0'-':'
-            lbdf  digikey
+          ; 
 
-            smi   ' '-'0'               ; if space, move one nibble forward
-            lbz   forwkey
-            lbdf  readkey
+lastkey:    inc   rc
+            inc   rc
 
-            smi   18-' '                ; if control-r, refresh current line
-            lbz   refresh
+lookkey:    lda   rc
+            lbz   readkey
 
-            smi   13-18                 ; if return, move to next line start
-            lbz   linekey
+            sm
+            lbz   skipkey
 
-            smi   12-13                 ; if control-l, move nibble forward
-            lbz   forwkey
+nextkey:    lda   rc
+            lbz   lastkey
 
-            smi   11-12                 ; if control-k, move back one line
-            lbz   prevkey
+            sm
+            lbnz  nextkey
 
-            smi   10-11                 ; if control-j, move ahead one line
-            lbz   downkey
+skipkey:    lda   rc
+            lbnz  skipkey
 
-            smi   9-10                  ; if tab key, move ahead one byte
-            lbz   bytekey
+            lbr   indjump
 
-            smi   8-9                   ; if backspace, move left one nibble
-            lbz   backkey
 
-            smi   3-8                   ; if control-c, then finished editing
-            lbz   endedit
+          ; Table of keystrokes and actions. Each entry starts with a string
+          ; of characters to match any of, which is terminated with a zero, 
+          ; and then followed by the address of the handler for those keys.
+          ; The end of the list is marked with a zero (a null string).
 
-            lbr   readkey               ; otherwise ignore key and get next
+keytab:     db    'ABCDEF',0
+            dw    upprkey
+
+            db    'abcdef',0
+            dw    lowrkey
+
+            db    '0123456789',0
+            dw    digikey
+
+            db    'X'&31,'C'&31,'Xx',0
+            dw    endedit
+
+            db    'R'&31,'Rr',0
+            dw    refresh
+
+            db    'M'&31,0
+            dw    linekey
+
+            db    'L'&31,'Ll ',0
+            dw    forwkey
+
+            db    'K'&31,'Kk',0
+            dw    prevkey
+
+            db    'J'&31,'Jj',0
+            dw    downkey
+
+            db    'H'&31,'Hh',0
+            dw    backkey
+
+            db    'I'&31,0
+            dw    bytekey
+
+            db    0
 
 
           ; If return is pressed, move to the first byte of the next line by
@@ -1112,16 +1131,20 @@ refresh:    glo   rb
           ; If a hex input key was pressed, update the data in the sector
           ; buffer, output digit, and move cursor as needed.
 
-digikey:    phi   ra                    ; save the numeric value 0-9
+lowrkey:    ldn   r2
+            smi   32
+            str   r2
 
-            adi   '0'                   ; make into ascii to display
-            lbr   disphex
+upprkey:    ldi   9
+            lskp
 
-alphkey:    adi   10                    ; save the numeric value 10-15
+digikey:    ldi   0
+            add
+            ani   15 
             phi   ra
- 
-            adi   'A'-10                ; make into ascii and update buffer
-disphex:    str   rb
+
+disphex:    ldn   r2
+            str   rb
             inc   rb
 
             sep   scall                 ; output character to screen
