@@ -4,32 +4,33 @@ This is a disk sector editor for Mini/DOS which allows viewing and modifying dis
 
 The following are the commands that are valid at the command line. Note that each command can be abbreviated to any number of leading characters of each word, for example, "r l 0" is the same as "read lba 0".
 
-|    Command    |                    Function                     |
-|---------------|-------------------------------------------------|
-| set drive (n) | Sets the disk being edited to drive (n)         |
-| set (n)       | Shortcut for "set drive"                        |
-| read lba (n)  | Reads the sector at LBA (n) into the buffer     |
-| read au (n)   | Reads the first sector of allocation unit (n)   |
-| read (n)      | Shortcut for "read lba"                         |
-| read          | Reloads the sector already in the buffer        |
-| au (n)        | Shortcut for "read au"                          |
-| write lba (n) | Writes the buffer to the sector at LBA (n)      |
-| write au (n)  | Writes the buffer to the first sector of au (n) |
-| write (n)     | Shortcut for "write lba"                        |
-| write         | Writes the buffer to the last sector accessed   |
-| edit high     | Edits the buffer starting at offset 100h        |
-| edit low      | Edits the buffer starting at offset 0           |
-| edit (n)      | Edits the buffer starting at offset (n)         |
-| edit          | Shortcut for "edit low"                         |
-| display high  | Displays 256 bytes starting at offset 100h      |
-| display low   | Displays 256 bytes starting at offset 0         |
-| display       | Displays the last sector address accessed       |
-| high          | Shortcut for "display high"                     |
-| low           | Shortcut for "display low"                      |
-| next lba      | Reads the sector after the last one accessed    |
-| next          | Shortcut for "next lba"                         |
-| previous lba  | Reads the sector before the last one accessed   |
-| previous      | Shortcut for "previous lba"                     |
+|     Command      |                    Function                     |
+|------------------|-------------------------------------------------|
+| set drive (n)    | Sets the disk being edited to drive (n)         |
+| set (n)          | Shortcut for "set drive"                        |
+| read lba (n)     | Reads the sector at LBA (n) into the buffer     |
+| read au (n)      | Reads the first sector of allocation unit (n)   |
+| read (n)         | Shortcut for "read lba"                         |
+| read             | Reloads the sector already in the buffer        |
+| au (n)           | Shortcut for "read au"                          |
+| write lba (n)    | Writes the buffer to the sector at LBA (n)      |
+| write au (n)     | Writes the buffer to the first sector of au (n) |
+| write (n)        | Shortcut for "write lba"                        |
+| write            | Writes the buffer to the last sector accessed   |
+| edit high        | Edits the buffer starting at offset 100h        |
+| edit low         | Edits the buffer starting at offset 0           |
+| edit (n)         | Edits the buffer starting at offset (n)         |
+| edit (n) (d) ... | Sets the bytes starting at (n) to (d) ...       |
+| edit             | Shortcut for "edit low"                         |
+| display high     | Displays 256 bytes starting at offset 100h      |
+| display low      | Displays 256 bytes starting at offset 0         |
+| display          | Displays the last sector address accessed       |
+| high             | Shortcut for "display high"                     |
+| low              | Shortcut for "display low"                      |
+| next lba         | Reads the sector after the last one accessed    |
+| next             | Shortcut for "next lba"                         |
+| previous lba     | Reads the sector before the last one accessed   |
+| previous         | Shortcut for "previous lba"                     |
 | zero          | Overwrites the buffer with all zero bytes       |
 | quit          | Exits the program, discarding the buffer        |
 
