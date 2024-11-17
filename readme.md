@@ -55,5 +55,5 @@ The following keystrokes are valid in editor mode:
 | `Backspace` | Move to prior digit        |
 | `Return`    | Move to start of next line |
 
-Note that following editor mode, the "write" command needs to be issued to commit the data back to disk. Otherwise, if another sector is read, or the program exited, any changes made int he buffer will be discarded.
+Note that following editor mode, the "write" command needs to be issued to commit the data back to disk. Otherwise, if another sector is read, or the program exited, any changes made to the buffer will be discarded.
 
