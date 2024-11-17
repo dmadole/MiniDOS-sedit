@@ -6,20 +6,20 @@ The following are the commands that are valid at the command line. Note that eac
 
 |    Command    |                    Function                     |
 |---------------|-------------------------------------------------|
-| set drive <n> | Sets the disk being edited to drive <n>         |
-| set <n>       | Shortcut for "set drive"                        |
-| read lba <n>  | Reads the sector at LBA <n> into the buffer     |
-| read au <n>   | Reads the first sector of allocation unit <n>   |
-| read <n>      | Shortcut for "read lba"                         |
+| set drive (n) | Sets the disk being edited to drive (n)         |
+| set (n)       | Shortcut for "set drive"                        |
+| read lba (n)  | Reads the sector at LBA (n) into the buffer     |
+| read au (n)   | Reads the first sector of allocation unit (n)   |
+| read (n)      | Shortcut for "read lba"                         |
 | read          | Reloads the sector already in the buffer        |
-| au <n>        | Shortcut for "read au"                          |
-| write lba <n> | Writes the buffer to the sector at LBA <n>      |
-| write au <n>  | Writes the buffer to the first sector of au <n> |
-| write <n>     | Shortcut for "write lba"                        |
+| au (n)        | Shortcut for "read au"                          |
+| write lba (n) | Writes the buffer to the sector at LBA (n)      |
+| write au (n)  | Writes the buffer to the first sector of au (n) |
+| write (n)     | Shortcut for "write lba"                        |
 | write         | Writes the buffer to the last sector accessed   |
 | edit high     | Edits the buffer starting at offset 100h        |
 | edit low      | Edits the buffer starting at offset 0           |
-| edit <n>      | Edits the buffer starting at offset <n>         |
+| edit (n)      | Edits the buffer starting at offset (n)         |
 | edit          | Shortcut for "edit low"                         |
 | display high  | Displays 256 bytes starting at offset 100h      |
 | display low   | Displays 256 bytes starting at offset 0         |
